@@ -7,9 +7,7 @@
 #include <sys/shm.h>
 #include <unistd.h> 
 
-
 #define ERROR 1
-
 
 struct mensagem {
 	long chave;
@@ -18,7 +16,6 @@ struct mensagem {
 };
 
 void executa () {
-
 	printf ("WORKER>> EXECUTANDO!!! \n\n");
 	sleep(5);
 }
@@ -29,19 +26,16 @@ int main () {
 	//FILE *fp;
 	struct mensagem arquivo;
 
-
 	// OBTER FILA DE MENSAGEM
 	if ((queueKey = msgget(602514, 0x124)) < 0 ) {
 		printf ("Erro p/ obter a fila de mensagem! \n");
 		exit (ERROR);
 	}
 
-
 	arquivo.chave= 4;
 	strcpy(arquivo.nome_exec, "ESTOU PRONTO!!! SOLICITANDO TRABALHO!!!");
 	strcpy(arquivo.tipo, "00000");
 	msgsnd (queueKey, &arquivo, sizeof(arquivo) - sizeof(long), 0);
-	
 
 	msgrcv (queueKey, &arquivo, sizeof(struct mensagem) - sizeof(long), 5, 0);
 	printf ("WORKER>> RECEBI MENSAGEM DO PROCESSO MESTRE!!! \n\n");

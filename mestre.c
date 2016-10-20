@@ -7,7 +7,7 @@
 #include <sys/shm.h>
 #include <unistd.h> 
 
-#define ERROR 				1
+#define ERROR 1
 
 struct mensagem {
 	long chave;
@@ -21,25 +21,30 @@ int main(int argc,char *argv[]) {
 	struct mensagem receive;
 	pid_t pid;
 
-		
 	if ((queueKey = msgget(602514, IPC_CREAT | 0x1FF)) < 0 ) {
 		printf ("Erro na criação da fila de mensagem! \n");
 		exit (ERROR);
 	}
 
-
+    for (int i = 0; i < 4; i++) {
+        if ((pid = fork()) < 0) {
+            perror("Erro no fork");
+            exit(ERROR);
+        } else if (pids[i] == 0) {
+            
+        }        
+    }
 
     if ((pid = fork()) < 0) {
         perror("Erro no fork");
         exit(ERROR);
     }
+
     if (pid == 0) {
     	execl("worker1", "worker1", (char *) 0);
-    	
     }
+
     printf ("MESTRE>> WORKER CRIADO COM SUCCESO!!! \n\n");
-
-
 
 	while (1) {
 		printf ("MESTRE>> ESTOU AGUARDANDO MENSAGEM DO CLIENTE: \n\n");

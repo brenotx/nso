@@ -7,7 +7,6 @@
 #include <sys/shm.h>
 #include <unistd.h> 
 
-
 #define ERROR 1
 
 struct mensagem {
@@ -22,13 +21,11 @@ int main () {
 	//FILE *fp;
 	struct mensagem arquivo;
 
-
 	// OBTER FILA DE MENSAGEM
 	if ((queueKey = msgget(602514, 0x124)) < 0 ) {
 		printf ("Erro p/ obter a fila de mensagem! \n");
 		exit (ERROR);
 	}
-
 
 	//fp = fopen (argv[1], "r");
     	//while ((c = fgetc(fp)) != EOF) {
