@@ -31,7 +31,7 @@ int main () {
 
 
 	// OBTER FILA DE MENSAGEM
-	if ((queueKey = msgget(602514, 0x124)) < 0 ) {
+	if ((queueKey = msgget(60251, 0666)) < 0 ) {
 		printf ("Erro p/ obter a fila de mensagem! \n");
 		exit (ERROR);
 	}

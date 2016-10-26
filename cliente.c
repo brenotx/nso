@@ -18,31 +18,45 @@ struct mensagem {
 
 int main () {
 	
-	int queueKey, num_processos;
-	//FILE *fp;
-	struct mensagem arquivo;
+	int queueKey, num_processos, i, j;
+	FILE *fp;
+	struct mensagem arquivo[1000], aux;
+	char * pch;
 
+	i = 0;
+	j = 0;
 
 	// OBTER FILA DE MENSAGEM
-	if ((queueKey = msgget(602514, 0x124)) < 0 ) {
+	if ((queueKey = msgget(60251, 0666)) < 0 ) {
 		printf ("Erro p/ obter a fila de mensagem! \n");
 		exit (ERROR);
 	}
 
-
-	//fp = fopen (argv[1], "r");
-    	//while ((c = fgetc(fp)) != EOF) {
-	     //   if((char) c != ',' && (char) c != ' ' ) {
-	        //	caracter[0] = (char) c;
-	        	arquivo.chave= 2;
-	        	strcpy(arquivo.nome_exec, "IURI");
-				strcpy(arquivo.tipo, "10");
-				msgsnd (queueKey, &arquivo, sizeof(arquivo) - sizeof(long), 0);
-				printf ("CLIENTE>> Mandei %s, estou aguardando .. \n\n", arquivo.nome_exec);
-				msgrcv (queueKey, &arquivo, sizeof(struct mensagem) - sizeof(long), 3, 0);
-
-				printf("%s\n", arquivo.nome_exec);
-
-	 //   fclose(fp);
+	fp = fopen("arquivo.txt","r");
+	if(!fp){
+    	printf( "Erro ao abrir o arquivo\n");
+    	exit(0);
+	}
+	while((fscanf(fp,"%s\n", arquivo[i].nome_exec)!=EOF)) {
+		pch = strtok (arquivo[i].nome_exec," <>");
+		strcpy (arquivo[i].nome_exec, pch);
+		pch = strtok (NULL," <>");
+		strcpy (arquivo[i].tipo, pch);
+    	
+		i++;
+	}
+	fclose(fp);
+	while (j < i) {
+		arquivo[j].chave = 2;
+		//strcpy(arquivo[i].nome_exec, "IURI");
+		//strcpy(arquivo[i].tipo, "10");
+		printf ("[%d] --> %s %s\n", j, arquivo[j].nome_exec, arquivo[j].tipo);
+		msgsnd (queueKey, &arquivo[j], sizeof(struct mensagem) - sizeof(long), 0);
+		printf ("CLIENTE>> Mandei %s, estou aguardando .. \n\n", arquivo[j].nome_exec);
+		msgrcv (queueKey, &aux, sizeof(struct mensagem) - sizeof(long), 3, 0);
+		//printf("%s\n", arquivo[j].nome_exec);
+		j++;
+	}
+	 
 	return (0);
 }
