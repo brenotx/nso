@@ -1,5 +1,9 @@
-<job><3>
-<texto><4>
-<jogo><10>
-<jogo><5>
-
+<Tarefa1><3>
+<Tarefa2><4>
+<Tarefa3><3>
+<Tarefa4><10>
+<Tarefa5><3>
+<Tarefa6><4>
+<Tarefa7><3>
+<Tarefa8><5>
+<Tarefa9><5>
