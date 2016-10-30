@@ -6,37 +6,16 @@
 #include <sys/msg.h>
 #include <sys/shm.h>
 #include <unistd.h> 
-
-#define ERROR 1
-
-// struct mensagem {
-// 	long chave;
-// 	char nome_exec[30];
-// 	char tipo[5];
-// };
-
-struct msg_info {
-	char nome_exec[30];
-	int tipo;
-};
-
-struct msgbuf {
-	long mtype;       				/* message type, must be > 0 */
-	struct msg_info msg_info[10];    	/* message data */
-	int num_process;
-};
+#include "mestre.h"
 
 int main () {
 	
-	int queueKey, num_processos, i, j, k;
+	int queueKey, i;
 	FILE *fp;
 	// struct mensagem arquivo, aux, mostra[80];
 	struct msgbuf msgbuf;
+	struct msgbuf msgbufrcv;
 	char * pch, str[80];
-
-	i = 0;
-	j = 0;
-	k = 0;
 
 	// OBTER FILA DE MENSAGEM
 	if ((queueKey = msgget(60251, 0666)) < 0 ) {
@@ -50,8 +29,10 @@ int main () {
     	exit(0);
 	}
 
+	i = 0;
 	msgbuf.num_process = 0;
 	char input_file[1000];
+
 	while((fscanf(fp,"%s\n", input_file)!=EOF)) {
 		pch = strtok (input_file," <>");
 		strcpy (msgbuf.msg_info[i].nome_exec, pch);
@@ -72,18 +53,13 @@ int main () {
   	}
 */
 	fclose(fp);
-	//while (j < i) {
-		// arquivo[j].chave = 2;
-		msgbuf.mtype = 1;
-		//strcpy(arquivo[i].nome_exec, "IURI");
-		//strcpy(arquivo[i].tipo, "10");
-		printf ("[%d] --> %s %d\n", j, msgbuf.msg_info[i].nome_exec, msgbuf.msg_info[i].tipo);
-		msgsnd (queueKey, &msgbuf, sizeof(struct msgbuf) - sizeof(long), 0);
-		printf ("CLIENTE>> Mandei %s, estou aguardando .. \n\n", msgbuf.msg_info[i].nome_exec);
-		// msgrcv (queueKey, &aux, sizeof("RECEBI A MENSAGEM !\n") - sizeof(long), 3, 0);
-		//printf("%s\n", arquivo[j].nome_exec);
-		j++;
-	//}
+	msgbuf.mtype = 1;
+	printf ("[0] --> %s %d\n", msgbuf.msg_info[i].nome_exec, msgbuf.msg_info[i].tipo);
+	msgsnd (queueKey, &msgbuf, sizeof(struct msgbuf) - sizeof(long), 0);
+	printf ("CLIENTE>> Mandei %s, estou aguardando .. \n\n", msgbuf.msg_info[i].nome_exec);
+	// msgrcv (queueKey, (void *) &msgbufrcv, sizeof(struct msgbuf) - sizeof(long), 1, 0);
+	// msgrcv (queueKey, &msgbuf, sizeof("RECEBI A MENSAGEM !\n") - sizeof(long), 1, 0);
+	//printf("%s\n", arquivo[j].nome_exec);
 	 
 	return (0);
 }

@@ -1,9 +1,9 @@
-<Tarefa1><3>
-<Tarefa2><4>
-<Tarefa3><3>
+<Tarefa1><1>
+<Tarefa2>5>
+<Tarefa3><10>
 <Tarefa4><10>
-<Tarefa5><3>
-<Tarefa6><4>
-<Tarefa7><3>
+<Tarefa5><1>
+<Tarefa6><1>
+<Tarefa7><10>
 <Tarefa8><5>
 <Tarefa9><5>
