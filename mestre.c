@@ -23,33 +23,35 @@ int main(int argc,char *argv[]) {
         exit (ERROR);
     }
 
-    // char buf[2];
-    // for (int i = 0; i <= 4; i++){
-    //     pid = fork();
-    //     if (pid == -1) {
-    //         /* error handling here, if needed */
-    //     }
-    //     if (pid == 0){
-    //         //printf("[Worker %d] Meu pid e %d e o pid do meu pai e %d\n", i, getpid(), getppid());
-    //         strcpy(name_worker, "worker");
-    //         buf[0] = (char) (cont_worker + '0');
-    //         buf[1] = '\0';
-    //         strcat(name_worker, buf);
-    //         // execl(name_worker, name_worker, (char *) 0);
-    //         cont_worker++;
-    //         // printf ("MESTRE>> WORKER CRIADO COM SUCCESO!!! \n\n");
-    //     }
-    // }
-    for (int i = 1; i <= 4; i++) {
+    char buf[2];
+    for (int i = 0; i < 4; i++){
         pid = fork();
         if (pid == -1) {
             /* error handling here, if needed */
         }
-        if (pid == 0) {
-            printf("I am a child: %d PID: %d\n",i, getpid());
-            sleep (5);
+        if (pid == 0){
+            //printf("[Worker %d] Meu pid e %d e o pid do meu pai e %d\n", i, getpid(), getppid());
+            strcpy(name_worker, "worker");
+            buf[0] = (char) (cont_worker + '0');
+            buf[1] = '\0';
+            strcat(name_worker, buf);
+            execl(name_worker, name_worker, (char *) 0);
+            cont_worker++;
+            break;
+            // printf ("MESTRE>> WORKER CRIADO COM SUCCESO!!! \n\n");
         }
     }
+    // for (int i = 1; i <= 4; i++) {
+    //     pid = fork();
+    //     if (pid == -1) {
+    //         /* error handling here, if needed */
+    //     }
+    //     if (pid == 0) {
+    //         printf("I am a child: %d PID: %d\n",i, getpid());
+    //         break;
+    //         sleep (5);
+    //     }
+    // }
 
 
 
@@ -97,20 +99,20 @@ int main(int argc,char *argv[]) {
         aux = aux->prox;
     }
     // i++;
-    /*// MANDA PARA O WORKER
-    printf("MESTRE>> MANDANDO O PROCESSO <%s> DO TIPO <%s> PARA WORKER\n\n", receive.nome_exec, receive.tipo);
-    receive.chave = 5;
-    sleep(2);
-    msgsnd (queueKey, &receive, sizeof(receive) - sizeof(long), 0);
+    // MANDA PARA O WORKER
+    // printf("MESTRE>> MANDANDO O PROCESSO <%s> DO TIPO <%s> PARA WORKER\n\n", receive.nome_exec, receive.tipo);
+    // receive.chave = 5;
+    // sleep(2);
+    // msgsnd (queueKey, &receive, sizeof(receive) - sizeof(long), 0);
 
-    // RECEBE CONFIRMACAO DO WORKER
-    msgrcv (queueKey, &receive, sizeof(struct mensagem) - sizeof(long), 7, 0);
-    printf ("\n\nMESTRE>> CONFIRMACAO : %s", receive.nome_exec);*/
+    // // RECEBE CONFIRMACAO DO WORKER
+    // msgrcv (queueKey, &receive, sizeof(struct mensagem) - sizeof(long), 7, 0);
+    // printf ("\n\nMESTRE>> CONFIRMACAO : %s", receive.nome_exec);
 
-    //MANDA CONFIRMACAO PARA O CLIENTE
+    // //MANDA CONFIRMACAO PARA O CLIENTE
     // send.chave = 3;
-    //strcpy(receive[i].nome_exec,"RECEBI A MENSAGEM !\n");
-    //strcpy(receive[i].tipo,"0");
+    // strcpy(receive[i].nome_exec,"RECEBI A MENSAGEM !\n");
+    // strcpy(receive[i].tipo,"0");
     // msgsnd (queueKey, &send, sizeof("RECEBI A MENSAGEM !\n") - sizeof(long), 0);
 
     
