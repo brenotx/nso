@@ -23,6 +23,7 @@ int main(int argc,char *argv[]) {
         exit (ERROR);
     }
 
+    printf ("MESTRE>> ESTOU AGUARDANDO MENSAGEM DO CLIENTE: \n\n");
     char buf[2];
     for (int i = 0; i < 4; i++){
         pid = fork();
@@ -31,15 +32,15 @@ int main(int argc,char *argv[]) {
         }
         if (pid == 0){
             //printf("[Worker %d] Meu pid e %d e o pid do meu pai e %d\n", i, getpid(), getppid());
-            strcpy(name_worker, "worker");
-            buf[0] = (char) (cont_worker + '0');
-            buf[1] = '\0';
-            strcat(name_worker, buf);
-            execl(name_worker, name_worker, (char *) 0);
-            cont_worker++;
             break;
             // printf ("MESTRE>> WORKER CRIADO COM SUCCESO!!! \n\n");
         }
+        strcpy(name_worker, "worker");
+        buf[0] = (char) (cont_worker + '0');
+        buf[1] = '\0';
+        strcat(name_worker, buf);
+        execl(name_worker, name_worker, (char *) 0);
+        cont_worker++;
     }
     // for (int i = 1; i <= 4; i++) {
     //     pid = fork();
@@ -59,7 +60,7 @@ int main(int argc,char *argv[]) {
     Fila *five = NULL;
     Fila *ten = NULL;
 
-    printf ("MESTRE>> ESTOU AGUARDANDO MENSAGEM DO CLIENTE: \n\n");
+    
     // RECEBE MENSAGEM DO CLIENTE
     msgrcv (queueKey, (void *) &msgbufrcv, sizeof(struct msgbuf) - sizeof(long), 1, 0);
     printf("%d\n", msgbufrcv.num_process);      
@@ -100,14 +101,14 @@ int main(int argc,char *argv[]) {
     }
     // i++;
     // MANDA PARA O WORKER
-    // printf("MESTRE>> MANDANDO O PROCESSO <%s> DO TIPO <%s> PARA WORKER\n\n", receive.nome_exec, receive.tipo);
-    // receive.chave = 5;
+    printf("MESTRE>> MANDANDO O PROCESSO <%s> DO TIPO <%d> PARA WORKER\n\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
+    // msgbufrcv.msg_info[i].chave = 5;
     // sleep(2);
     // msgsnd (queueKey, &receive, sizeof(receive) - sizeof(long), 0);
 
     // // RECEBE CONFIRMACAO DO WORKER
     // msgrcv (queueKey, &receive, sizeof(struct mensagem) - sizeof(long), 7, 0);
-    // printf ("\n\nMESTRE>> CONFIRMACAO : %s", receive.nome_exec);
+    // printf ("\n\nMESTRE>> CONFIRMACAO : %s", msgbufrcv.msg_info[i].nome_exec);
 
     // //MANDA CONFIRMACAO PARA O CLIENTE
     // send.chave = 3;
