@@ -9,20 +9,32 @@
 
 #define ERROR 1
 
-struct mensagem {
-	long chave;
+// struct mensagem {
+// 	long chave;
+// 	char nome_exec[30];
+// 	char tipo[5];
+// };
+
+struct msg_info {
 	char nome_exec[30];
-	char tipo[5];
+	int tipo;
+};
+
+struct msgbuf {
+	long mtype;       					/* message type, must be > 0 */
+	struct msg_info msg_info[10];    	/* message data */
+	int num_process;
 };
 
 int main(int argc,char *argv[]) {
 
 	int queueKey, i, cont_worker;
-	struct mensagem receive[10],send;
+	// struct mensagem receive[10],send;
+	struct msgbuf msgbufrcv;
 	pid_t pid;
 	char name_worker[8], ccont_worker;
 
-	cont_worker = 0;
+	// cont_worker = 0;
 
 	if ((queueKey = msgget(60251, IPC_CREAT | 0666)) < 0 ) {
 		printf ("Erro na criação da fila de mensagem! \n");
@@ -51,16 +63,17 @@ int main(int argc,char *argv[]) {
     printf ("MESTRE>> WORKER CRIADO COM SUCCESO!!! \n\n");*/
 
 
-	while (1) {
+	// while (1) {
 		printf ("MESTRE>> ESTOU AGUARDANDO MENSAGEM DO CLIENTE: \n\n");
 		// RECEBE MENSAGEM DO CLIENTE
-		msgrcv (queueKey, &receive, sizeof(struct mensagem[10]) - sizeof(long), 2, 0);
+		msgrcv (queueKey, (void *) &msgbufrcv, sizeof(struct msgbuf) - sizeof(long), 1, 0);
+		printf("%d\n", msgbufrcv.num_process);		
 
-		for (int k = 0; k < 4; k++) {
-			printf ("MESTRE>> RECEBI O PROCESSO <%s> DO TIPO <%s>\n\n", receive[k].nome_exec, receive[k].tipo);
+		for (int i = 0; i < msgbufrcv.num_process; i++) {
+			printf ("MESTRE>> RECEBI O PROCESSO <%s> DO TIPO <%d>\n\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
 		}
 
-		i++;
+		// i++;
 		/*// MANDA PARA O WORKER
 		printf("MESTRE>> MANDANDO O PROCESSO <%s> DO TIPO <%s> PARA WORKER\n\n", receive.nome_exec, receive.tipo);
 		receive.chave = 5;
@@ -72,13 +85,13 @@ int main(int argc,char *argv[]) {
 		printf ("\n\nMESTRE>> CONFIRMACAO : %s", receive.nome_exec);*/
 
 		//MANDA CONFIRMACAO PARA O CLIENTE
-		send.chave = 3;
+		// send.chave = 3;
 		//strcpy(receive[i].nome_exec,"RECEBI A MENSAGEM !\n");
 		//strcpy(receive[i].tipo,"0");
-		msgsnd (queueKey, &send, sizeof("RECEBI A MENSAGEM !\n") - sizeof(long), 0);
+		// msgsnd (queueKey, &send, sizeof("RECEBI A MENSAGEM !\n") - sizeof(long), 0);
 
 		
 		
-	}
+	// }
 	return (0);
 }
