@@ -10,3 +10,8 @@ struct msgbuf {
 	Info msg_info[10];    	/* message data */
 	int num_process;
 };
+
+struct msgbufworker {
+    long mtype;
+    char mtext[100];
+};

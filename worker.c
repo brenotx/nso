@@ -11,7 +11,7 @@
 
 struct msgbufworker {
 	long mtype;
-	char mtext[30];
+	char mtext[100];
 };
 
 void executa () {
@@ -20,28 +20,25 @@ void executa () {
 }
 
 int main () {
-	
+
 	int queueKey;
 	struct msgbufworker msgbufw;
 
-	// OBTER FILA DE MENSAGEM
 	if ((queueKey = msgget(60251, 0666)) < 0 ) {
 		printf ("Erro p/ obter a fila de mensagem! \n");
 		exit (ERROR);
 	}
 
-
-	msgbufw.mtype= 5;
-	strcpy(msgbufw.mtext, "ESTOU PRONTO!!! SOLICITANDO TRABALHO!!!");
+	msgbufw.mtype = 5;
+	strcpy(msgbufw.mtext, "ESTOU PRONTO!!!");
 	msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
 
 	msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
-	printf ("WORKER>> RECEBI MENSAGEM DO PROCESSO MESTRE!!! \n\n");
-	//printf("%s\n", arquivo.nome_exec);
+	printf ("(WORKER) RECEBI MENSAGEM DO PROCESSO MESTRE!!! \n\n");
 	executa ();
 	sleep(5);
 
-	msgbufw.mtext= 7;
+	msgbufw.mtype = 7;
 	strcpy(msgbufw.mtext, "EXECUTADO COM SUCESSO!!!\n\n");
 	msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
 	return (0);
