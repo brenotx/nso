@@ -7,28 +7,22 @@
 #include <sys/shm.h>
 #include <unistd.h> 
 
-
 #define ERROR 1
 
-
-struct mensagem {
-	long chave;
-	char nome_exec[30];
-	char tipo[5];
+struct msgbufworker {
+	long mtype;
+	char mtext[30];
 };
 
 void executa () {
-
 	printf ("WORKER>> EXECUTANDO!!! \n\n");
 	sleep(5);
 }
 
 int main () {
 	
-	int queueKey, num_processos;
-	//FILE *fp;
-	struct mensagem arquivo;
-
+	int queueKey;
+	struct msgbufworker msgbufw;
 
 	// OBTER FILA DE MENSAGEM
 	if ((queueKey = msgget(60251, 0666)) < 0 ) {
@@ -37,21 +31,18 @@ int main () {
 	}
 
 
-	arquivo.chave= 4;
-	strcpy(arquivo.nome_exec, "ESTOU PRONTO!!! SOLICITANDO TRABALHO!!!");
-	strcpy(arquivo.tipo, "00000");
-	msgsnd (queueKey, &arquivo, sizeof(arquivo) - sizeof(long), 0);
-	
+	msgbufw.mtype= 5;
+	strcpy(msgbufw.mtext, "ESTOU PRONTO!!! SOLICITANDO TRABALHO!!!");
+	msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
 
-	msgrcv (queueKey, &arquivo, sizeof(struct mensagem) - sizeof(long), 5, 0);
+	msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
 	printf ("WORKER>> RECEBI MENSAGEM DO PROCESSO MESTRE!!! \n\n");
 	//printf("%s\n", arquivo.nome_exec);
 	executa ();
 	sleep(5);
 
-	arquivo.chave= 7;
-	strcpy(arquivo.nome_exec, "EXECUTADO COM SUCESSO!!!\n\n");
-	strcpy(arquivo.tipo, "00000");
-	msgsnd (queueKey, &arquivo, sizeof(arquivo) - sizeof(long), 0);
+	msgbufw.mtext= 7;
+	strcpy(msgbufw.mtext, "EXECUTADO COM SUCESSO!!!\n\n");
+	msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
 	return (0);
 }
