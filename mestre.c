@@ -24,7 +24,8 @@ int main(int argc,char *argv[]) {
     }
 
     printf("(MESTRE) ESTOU EXECUTANDO\n");
-    printf("(MESTRE) ESTOU ESPERANDO SINAL DE ALGUM WORKER\n");
+    printf("(MESTRE) CRIANDO PROCESSOS PARA OS WORKERS:\n");
+    // printf("(MESTRE) ESTOU ESPERANDO SINAL DE ALGUM WORKER\n");
     char buf[200];
     for (i = 0; i < 4; i++){
         pid = fork();
@@ -32,7 +33,7 @@ int main(int argc,char *argv[]) {
             /* error handling here, if needed */
         }
         if (pid == 0){
-            //printf("[Worker %d] Meu pid e %d e o pid do meu pai e %d\n", i, getpid(), getppid());
+            printf("\t[Worker %d] Meu pid e %d e o pid do meu pai e %d\n", i, getpid(), getppid());
             break;
             // printf ("MESTRE>> WORKER CRIADO COM SUCCESO!!! \n\n");
         }
@@ -44,16 +45,14 @@ int main(int argc,char *argv[]) {
         cont_worker++;
     }
 
-    msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
-    printf("(WORKER) %s\n", msgbufw.mtext);
-
     Fila *one = NULL;
     Fila *five = NULL;
     Fila *ten = NULL;
     
-    printf ("(MESTRE) ESTOU AGUARDANDO MENSAGEM DO CLIENTE: \n\n");
+    // printf ("(MESTRE) ESTOU AGUARDANDO MENSAGEM DO CLIENTE: \n\n");
     // RECEBE MENSAGEM DO CLIENTE
     msgrcv (queueKey, (void *) &msgbufrcv, sizeof(struct msgbuf) - sizeof(long), 1, 0);
+    printf ("(MESTRE) RECEBI MENSAGEM DO CLIENTE \n");
 
     for (i = 0; i < msgbufrcv.num_process; i++) {
         switch(msgbufrcv.msg_info[i].tipo) {
@@ -67,26 +66,37 @@ int main(int argc,char *argv[]) {
                 ten = push(ten, msgbufrcv.msg_info[i].nome_exec);
                 break;
         }
-        printf ("(MESTRE) RECEBI O PROCESSO - %s - DO TIPO - %d\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
+        printf ("\tPROCESSO - %s - DO TIPO - %d\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
     }
+
+    // printf ("(MESTRE) ESTOU AGUARDANDO MENSAGEM DO CLIENTE \n\n");
+    msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
+    printf("(WORKER) %s\n", msgbufw.mtext);
 
     // printf("Fila 1:\n");
     while(front(one, buf)){
-        printf ("Processo na fila one %s\n", buf);
+        // printf ("Processo na fila one %s\n", buf);
+        printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n", buf, msgbufrcv.msg_info[i].tipo);
+        msgbufw.mtype = 10;
+        msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
         one = pop(one);
     }
     while(front(five, buf)){
-        printf ("Processo na fila five %s\n", buf);
+        // printf ("Processo na fila five %s\n", buf);
+        // printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n\n", buf, msgbufrcv.msg_info[i].tipo);
         five = pop(five);
     }
     while(front(ten, buf)){
-        printf ("Processo na fila ten %s\n", buf);
+        // printf ("Processo na fila ten %s\n", buf);
+        // printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n\n", buf, msgbufrcv.msg_info[i].tipo);
         ten = pop(ten);
     }
 
 
+
+
     // MANDA PARA O WORKER
-    printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
+    // printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
     // msgbufrcv.msg_info[i].chave = 5;
     // sleep(2);
     // msgsnd (queueKey, &receive, sizeof(receive) - sizeof(long), 0);

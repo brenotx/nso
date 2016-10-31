@@ -33,13 +33,13 @@ int main () {
 	strcpy(msgbufw.mtext, "ESTOU PRONTO!!!");
 	msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
 
-	msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
+	msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 100, 0);
 	printf ("(WORKER) RECEBI MENSAGEM DO PROCESSO MESTRE!!! \n\n");
 	executa ();
 	sleep(5);
 
-	msgbufw.mtype = 7;
-	strcpy(msgbufw.mtext, "EXECUTADO COM SUCESSO!!!\n\n");
-	msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
+	// msgbufw.mtype = 7;
+	// strcpy(msgbufw.mtext, "EXECUTADO COM SUCESSO!!!\n\n");
+	// msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
 	return (0);
 }
