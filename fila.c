@@ -60,3 +60,12 @@ Fila* pop(Fila* f)
     free(f);
     return temp;
 }
+
+int front(Fila *f, char *ret) 
+{
+    if(fila_vazia(f)) {
+      return 0;
+    }
+    strcpy(ret, f->valor);
+    return 1;
+}
