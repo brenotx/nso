@@ -1,3 +1,19 @@
+/*
+Alunos: Breno Teixeira - 10/0026087, Iuri Batista Beserra - 11/0013620
+
+Sistema Operacional : OS X Yosemite - v10.10.5
+
+Versão do Compilador: Configured with: --prefix=/Library/Developer/CommandLineTools/usr --with-gxx-include-dir=/usr/include/c++/4.2.1
+Apple LLVM version 7.0.2 (clang-700.1.81)
+Target: x86_64-apple-darwin14.5.0
+Thread model: posix
+
+Ordem de execução dos processos: Executar primeiro o Mestre e em seguida execute o Cliente. Compile o worker.c para criar 4 executáveis,
+como exemplo: gcc worker.c -o worker0 worker.c
+
+Mecanismos IPCS utilizados : Fila de mensagens.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,17 +41,15 @@ int main(int argc,char *argv[]) {
 
     printf("(MESTRE) ESTOU EXECUTANDO\n");
     printf("(MESTRE) CRIANDO PROCESSOS PARA OS WORKERS:\n");
-    // printf("(MESTRE) ESTOU ESPERANDO SINAL DE ALGUM WORKER\n");
     char buf[200];
     for (i = 0; i < 4; i++){
         pid = fork();
         if (pid == -1) {
-            /* error handling here, if needed */
+            printf("Erro ao criar o processo!\n");
         }
         if (pid == 0){
             printf("\t[Worker %d] Meu pid e %d e o pid do meu pai e %d\n", i, getpid(), getppid());
             break;
-            // printf ("MESTRE>> WORKER CRIADO COM SUCCESO!!! \n\n");
         }
         strcpy(name_worker, "worker");
         buf[0] = (char) (cont_worker + '0');
@@ -48,8 +62,7 @@ int main(int argc,char *argv[]) {
     Fila *one = NULL;
     Fila *five = NULL;
     Fila *ten = NULL;
-    
-    // printf ("(MESTRE) ESTOU AGUARDANDO MENSAGEM DO CLIENTE: \n\n");
+
     // RECEBE MENSAGEM DO CLIENTE
     msgrcv (queueKey, (void *) &msgbufrcv, sizeof(struct msgbuf) - sizeof(long), 1, 0);
     printf ("(MESTRE) RECEBI MENSAGEM DO CLIENTE \n");
@@ -69,49 +82,32 @@ int main(int argc,char *argv[]) {
         printf ("\tPROCESSO - %s - DO TIPO - %d\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
     }
 
-    // printf ("(MESTRE) ESTOU AGUARDANDO MENSAGEM DO CLIENTE \n\n");
-    msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
-    printf("(WORKER) %s\n", msgbufw.mtext);
-
-    // printf("Fila 1:\n");
     while(front(one, buf)){
-        // printf ("Processo na fila one %s\n", buf);
-        printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n", buf, msgbufrcv.msg_info[i].tipo);
-        msgbufw.mtype = 10;
+        printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - 1 PARA WORKER\n", buf);
+        msgbufw.mtype = 7;
         msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
         one = pop(one);
+        msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
+        printf("(WORKER) %s\n", msgbufw.mtext);
+
     }
     while(front(five, buf)){
-        // printf ("Processo na fila five %s\n", buf);
-        // printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n\n", buf, msgbufrcv.msg_info[i].tipo);
+        printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - 5 PARA WORKER\n", buf);
+        msgbufw.mtype = 7;
+        msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
         five = pop(five);
+        msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
+        printf("(WORKER) %s\n", msgbufw.mtext);
+
     }
     while(front(ten, buf)){
-        // printf ("Processo na fila ten %s\n", buf);
-        // printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n\n", buf, msgbufrcv.msg_info[i].tipo);
+        printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - 10 PARA WORKER\n", buf);
+        msgbufw.mtype = 7;
+        msgsnd (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 0);
         ten = pop(ten);
+        msgrcv (queueKey, &msgbufw, sizeof(struct msgbufworker) - sizeof(long), 5, 0);
+        printf("(WORKER) %s\n", msgbufw.mtext);
+
     }
-
-
-
-
-    // MANDA PARA O WORKER
-    // printf("(MESTRE) MANDANDO O PROCESSO - %s - DO TIPO - %d PARA WORKER\n\n", msgbufrcv.msg_info[i].nome_exec, msgbufrcv.msg_info[i].tipo);
-    // msgbufrcv.msg_info[i].chave = 5;
-    // sleep(2);
-    // msgsnd (queueKey, &receive, sizeof(receive) - sizeof(long), 0);
-
-    // // RECEBE CONFIRMACAO DO WORKER
-    // msgrcv (queueKey, &receive, sizeof(struct mensagem) - sizeof(long), 7, 0);
-    // printf ("\n\nMESTRE>> CONFIRMACAO : %s", msgbufrcv.msg_info[i].nome_exec);
-
-    // //MANDA CONFIRMACAO PARA O CLIENTE
-    // send.chave = 3;
-    // strcpy(receive[i].nome_exec,"RECEBI A MENSAGEM !\n");
-    // strcpy(receive[i].tipo,"0");
-    // msgsnd (queueKey, &send, sizeof("RECEBI A MENSAGEM !\n") - sizeof(long), 0);
-
-    
-    
     return (0);
 }
